@@ -45,7 +45,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -114,4 +114,27 @@ export function param2Obj(url) {
     }
   })
   return obj
+}
+
+/** *
+ *
+ *  将列表型的数据转化成树形数据 => 递归算法 => 自身调用自身 => 一定条件不能一样， 否则就会死循环
+ *  遍历树形 有一个重点 要先找一个头儿 就是父id
+ * ***/
+export function tranListToTreeData(list, rootValue) {
+  // 因为一次判断一级节点 那么 pid就是空的 这个可以直接调用方法写入
+  // 空的数组接收树形结构数据
+  var arr = []
+  list.forEach(item => {
+    // 父节点id === 子节点id 那么就是他的儿子
+    if (item.pid === rootValue) {
+      const children = tranListToTreeData(list, item.id)
+      // 说明有二级菜单 那么说明找到了
+      if (children.length) {
+        item.children = children
+      }
+      arr.push(item)
+    }
+  })
+  return arr
 }

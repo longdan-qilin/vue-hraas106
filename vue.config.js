@@ -15,6 +15,32 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 // port = 9528 npm run dev OR npm run dev --port = 9528
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 
+// 通过环境变量 来区分是否使用cdn
+let cdn = { css: [], js: [] }
+// 判断是否是生产环境
+const isProd = process.env.NODE_ENV === 'production'
+let externals = {}
+if (isProd) {
+  // 如果是生产环境 就排除打包 否则不排除
+  externals = {
+    // key(包名) / value(这个值 是 需要在CDN中获取js, 相当于 获取的js中 的该包的全局的对象的名字)
+    'vue': 'Vue', // 后面的名字不能随便起 应该是 js中的全局对象名
+    'element-ui': 'ELEMENT', // 都是js中全局定义的
+    'xlsx': 'XLSX' // 都是js中全局定义的
+  }
+  // 如果是生产环境下 注入cdn
+  cdn = {
+    css: [
+      'https://unpkg.com/element-ui/lib/theme-chalk/index.css' // 提前引入elementUI样式
+    ], // 放置css文件目录
+    js: [
+      'https://unpkg.com/vue/dist/vue.js', // vuejs
+      'https://unpkg.com/element-ui/lib/index.js', // element
+      'https://cdn.jsdelivr.net/npm/xlsx@0.16.6/dist/xlsx.full.min.js', // xlsx 相关
+      'https://cdn.jsdelivr.net/npm/xlsx@0.16.6/dist/jszip.min.js' // xlsx 相关
+    ] // 放置js文件目录
+  }
+}
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
   /**
@@ -35,6 +61,18 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    // 代理跨域的配置
+    proxy: {
+      '/api': {
+        target: 'http://ihrm-java.itheima.net/', // 我们要代理的地址
+        changeOrigin: true // 表示允许跨域 是否跨域 需要设置此值为true 才可以让本地服务代理我们发出请求
+        // 路径重写
+        /*   pathRewrite: {
+          // 重新路由  localhost:8888/api/login  => www.baidu.com/api/login
+          '^/api': '' // 假设我们想把 localhost:8888/api/login 变成www.baidu.com/login 就需要这么做
+        } */
+      }
     }
     // before: require('./mock/mock-server.js') 用不到模拟数据
   },
@@ -46,7 +84,13 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    // 排除 elementUI xlsx  和 vue
+    // key(是要排除的包名): value(实际上是实际引入的包的全局的变量名)
+    /*
+        因为要排除element-ui 所以后面要引入CDN文件 CDN文件中有ELEMENTUTd
+     */
+    externals: externals
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
@@ -59,6 +103,14 @@ module.exports = {
         include: 'initial'
       }
     ])
+
+    // 注入cdn变量
+    // 这行代码 会在执行打包的时候 执行 就会将cdn变量注入到 html模板中
+    config.plugin('html').tap(args => {
+      // args 是注入html模板的一个变量
+      args[0].cdn = cdn // 后面的cdn就是定义的变量
+      return args // 需要返回这个参数
+    })
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
@@ -87,7 +139,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
