@@ -6,7 +6,7 @@
       @toggleClick="toggleSideBar"
     />
     <div class="app-breadcrumb">
-      江苏传智播客教育科技股份有限公司
+      xxxxxx
       <span class="breadBtn">体验版</span>
     </div>
     <!-- <breadcrumb class="breadcrumb-container" /> -->

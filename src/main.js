@@ -18,6 +18,8 @@ import '@/permission' // permission control
 import * as directives from '@/directives'
 // 注册自定义过滤器
 import * as filters from '@/filters'
+import storage from '@/utils/storage'
+
 // 遍历所有的导出的指令对象 完成自定义全局注册
 Object.keys(directives).forEach(key => {
   // 注册自定义指令
@@ -41,7 +43,7 @@ if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
-
+Vue.prototype.$storage = storage
 // set ElementUI lang to EN
 // Vue.use(ElementUI, { locale }) // 注册自已的插件
 // 如果想要中文版 element-ui，按如下方式声明
