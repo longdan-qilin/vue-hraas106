@@ -10,21 +10,151 @@
 
 <body>
   <script>
-    class Father {
-      constructor(val) {
-        this.val = val
-      }
-      my() {
-        console.log(this.val)
-      }
+    // class Father {
+    //   constructor(val) {
+    //     this.val = val
+    //   }
+    //   my() {
+    //     console.log(this.val)
+    //   }
+    // }
+
+    // class Son extends Father {
+    //   constructor(val) {
+    //     super(val)
+    //     this.val = val
+    //   }
+    // }
+
+    // function deteleObject(obj) {
+    //   // console.log(obj)
+    //   var uniques = [];
+    //   var stringify = {};
+    //   for (var i = 0; i < obj.length; i++) {
+    //     var keys = Object.keys(obj[i]);
+    //     var str = '';
+    //     for (var j = 0; j < keys.length; j++) {
+    //       str += JSON.stringify(keys[j]);
+    //       str += JSON.stringify(obj[i][keys[j]]);
+    //     }
+    //     if (!stringify.hasOwnProperty(str)) {
+    //       uniques.push(obj[i]);
+    //       stringify[str] = true;
+    //     }
+    //   }
+
+    //   return uniques
+    // }
+
+    const tree = [{
+      a: 1,
+      b: 2,
+      children: [{
+        'a - 1': 111,
+        children: []
+      }]
+    }, {
+      a: 2,
+      b: 2,
+      children: []
+    }]
+
+    // function filterTree(data) {
+    //   return data.map(x => {
+    //     // 当有children 这个属性和 为空的话 留下其他对象键值对
+    //     if (x.hasOwnProperty('children') && x.children.length === 0) {
+    //       const obj = {}
+    //       Object.keys(x).forEach(key => {
+    //         if (key !== children) {
+    //           obj[key] = x[key]
+    //         }
+    //       })
+    //       return obj
+    //     }
+    //     // 如果还有子项的话
+    //     if (x.hasOwnProperty('children') && x.children.length !== 0) {
+    //       // 递归继续帅选 且替换当前的值
+    //       x.children = filterTree(x.children)
+    //     }
+    //   })
+    //   // newTree.forEach(x => x.children && (x.children = filterTree(x.children)))
+    // }
+
+    // filterTree(tree)
+    // console.log(filterTree(tree), 122);
+
+    function filterChild(array) {
+      // 遍历数组，返回处理后的数组
+      return array.map(item => {
+        // 如果此项有属性children并且属性children为空
+        if (item.hasOwnProperty('children') && item.children.length !== 0) {
+          // 内部调用自己
+          item.children = filterChild(item.children)
+        }
+        if (item.hasOwnProperty('children') && item.children.length === 0) {
+          // 如果此项有属性children并且属性children不为空
+          const obj = {}
+          Object.keys(item).forEach(key => {
+            if (key !== 'children') obj[key] = item[key]
+          })
+          console.log(obj);
+          return obj
+        }
+        return item
+      })
     }
 
-    class Son extends Father {
-      constructor(val) {
-        super(val)
-        this.val = val
-      }
+
+    console.log(filterChild(tree), 222)
+
+
+
+
+
+
+    // var arr1 = [123, "meili", "123", "mogu", 123];
+    // var arr2 = [123, [1, 2, 3],
+    //   [1, "2", 3],
+    //   [1, 2, 3]
+    // ];
+    // var arr3 = [123, {
+    //   a: 1
+    // }, {
+    //   a: {
+    //     b: 1
+    //   }
+    // }, {
+    //   a: "1"
+    // }, {
+    //   a: {
+    //     b: 1
+    //   }
+    // }, "meili"];
+    // var arr4 = [
+    //   [1, 2, 3], '[1,2,3]', [1, 2, 3], {
+    //     a: {
+    //       b: 1
+    //     }
+    //   }, '{"a":{"b":1}}', {
+    //     a: {
+    //       b: 1
+    //     }
+    //   },
+    //   1, 1, 2, 2, 3
+    // ]
+
+    // console.log(deteleObject(arr1))
+    // console.log(deteleObject(arr2))
+    // console.log(deteleObject(arr3))
+    // console.log(deteleObject(arr4))
+    function Fubar(foo, bar) {
+      "use strict";
+      this._foo = foo;
+      this._bar = bar;
     }
+
+    const a =  new Fubar(1, 2)
+    console.log(a._foo,a._bar);
 
   </script>
 </body>

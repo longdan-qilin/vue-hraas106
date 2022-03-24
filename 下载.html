@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="btn">模板下载</button>
+  <a href="./README-zh.md" download="哈哈">111</a>
+  <a href="./包材出入库导入模板.xlsx">11111111</a>
+  <script>
+    const btn = document.getElementById('btn')
+    btn.addEventListener('click', function () {
+      let downloadElement = document.createElement("a");
+      let href = './包材出入库导入模板.xlsx'; // 创建下载的链接
+      downloadElement.href = href;
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); // 点击下载
+      document.body.removeChild(downloadElement); // 下载完成移除元素
+    }, false)
+    // 检查浏览器是否支持下载api
+    console.log('download' in document.createElement('a'));
+
+  </script>
+</body>
+
+</html>
